@@ -1,4 +1,4 @@
-## 通用web框架开发模板
+## K8s agent
 此项目为golang通用web项目开发基础框架，主要使用架构有：
 - Gin: golang最主流web框架
 - Zap: Uber开源的日志收集框架
@@ -70,8 +70,6 @@ func init() {
 	server := config.GetWebServer()
 
 	v1 := server.Group("/api/v1")
-    // 配置登陆拦截器
-	v1.Use(MiddlewareAuth)
 	{
 		v1.GET("/:namespace/list", service.Helloworld)
 

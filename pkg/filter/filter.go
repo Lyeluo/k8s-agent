@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"k8s.agent/pkg/model"
 )
@@ -13,6 +14,12 @@ const (
 )
 
 func MiddlewareAuth(c *gin.Context) {
+
+	if !viper.GetBool("auth.open") {
+		c.Next()
+		return
+	}
+
 	secretKey := c.GetHeader(SECRET_KEY)
 
 	if secretKey == "" {

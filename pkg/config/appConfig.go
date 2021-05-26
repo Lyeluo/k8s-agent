@@ -15,6 +15,11 @@ type Server struct {
 type Config struct {
 	Server    Server
 	LogConfig LogConfig
+	Auth      Auth
+}
+
+type Auth struct {
+	isOpen bool `JSON:"open"`
 }
 
 type LogConfig struct {

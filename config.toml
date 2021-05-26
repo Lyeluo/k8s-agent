@@ -10,3 +10,5 @@
 	maxAge     = 10
      # 保留旧文件的最大个数
 	maxBackups = 3  
+[auth]
+    open = false    
