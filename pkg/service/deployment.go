@@ -86,16 +86,17 @@ func DeploymentUpdate(c *gin.Context) {
 func DeploymentPatch(c *gin.Context) {
 	name := c.Param("name")
 	namespace := c.Param("namespace")
-	// todo: 绑定这一步不确定是否必须
+
 	data := make(map[string]interface{})
 	if err := c.BindJSON(&data); err != nil {
 		zap.L().Sugar().Errorf("更新deployment失败，原因: %s", err.Error())
 		c.JSON(http.StatusBadRequest, model.NewResponse(false, nil, err.Error()))
 		return
 	}
+
 	playLoadBytes, _ := json.Marshal(data)
 
-	deploymentResult, err := config.GetK8sConfig().AppsV1().Deployments(namespace).Patch(name, types.JSONPatchType, playLoadBytes)
+	deploymentResult, err := config.GetK8sConfig().AppsV1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, playLoadBytes)
 	if err != nil {
 		zap.L().Sugar().Errorf("更新deployment失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))

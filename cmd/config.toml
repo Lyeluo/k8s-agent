@@ -1,0 +1,14 @@
+[server]
+    port = 19000
+[logConfig]
+	level      = ""
+    # 日志文件的位置
+	filename   = "./k8s-agent.log"
+    # 在进行切割之前，日志文件的最大大小（以MB为单位） 
+	maxSize    = 200
+    # 保留旧文件的最大天数
+	maxAge     = 10
+     # 保留旧文件的最大个数
+	maxBackups = 3  
+[auth]
+    open = false    
