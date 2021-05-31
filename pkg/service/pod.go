@@ -1,13 +1,17 @@
 package service
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"k8s.agent/pkg/config"
 	"k8s.agent/pkg/model"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -18,7 +22,7 @@ func PodListByDeployment(c *gin.Context) {
 
 	deploymentName := c.Param("deployment")
 
-	deployment, err := config.GetK8sConfig().AppsV1().Deployments(namespace).Get(deploymentName, metav1.GetOptions{})
+	deployment, err := config.GetK8sClient().AppsV1().Deployments(namespace).Get(deploymentName, metav1.GetOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("查询pod失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, deployment, err.Error()))
@@ -29,7 +33,7 @@ func PodListByDeployment(c *gin.Context) {
 	option := metav1.ListOptions{
 		LabelSelector: listSelector.String(),
 	}
-	podList, err := config.GetK8sConfig().CoreV1().Pods(namespace).List(option)
+	podList, err := config.GetK8sClient().CoreV1().Pods(namespace).List(option)
 	if err != nil {
 		zap.L().Sugar().Errorf("查询pod失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, podList, err.Error()))
@@ -52,12 +56,58 @@ func PodPatch(c *gin.Context) {
 	}
 
 	playLoadBytes, _ := json.Marshal(data)
-
-	podResult, err := config.GetK8sConfig().CoreV1().Pods(namespace).Patch(name, types.StrategicMergePatchType, playLoadBytes)
+	podResult, err := config.GetK8sClient().CoreV1().Pods(namespace).Patch(name, types.StrategicMergePatchType, playLoadBytes)
 	if err != nil {
 		zap.L().Sugar().Errorf("更新pod失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, model.NewResponse(true, podResult, model.NoErr.Msg))
+}
+
+// 查询日志
+func PodLogs(c *gin.Context) {
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+	podLogOpts := v1.PodLogOptions{}
+
+	if err := c.BindJSON(&podLogOpts); err != nil {
+		zap.L().Sugar().Errorf("更新deployment失败，原因: %s", err.Error())
+		c.JSON(http.StatusBadRequest, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	req := config.GetK8sClient().CoreV1().Pods(namespace).GetLogs(name, &podLogOpts)
+	podLogs, err := req.Stream()
+	if err != nil {
+		zap.L().Sugar().Errorf("查询日志失败，原因: %s", err.Error())
+		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	defer podLogs.Close()
+
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, podLogs)
+	if err != nil {
+		zap.L().Sugar().Errorf("查询日志失败，原因: %s", err.Error())
+		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	str := buf.String()
+	fmt.Printf("查询到日志：%s \n", str)
+	c.JSON(http.StatusOK, model.NewResponse(false, str, model.NoErr.Msg))
+}
+
+func PodExec(c *gin.Context) {
+	namespace := c.Param("namespace")
+	name := c.Param("name")
+
+	podExecl := model.PodExecl{}
+	if err := c.BindJSON(&podExecl); err != nil {
+		zap.L().Sugar().Errorf("执行容器命令失败，原因: %s", err.Error())
+		c.JSON(http.StatusBadRequest, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+
+	ExecInPod(config.GetK8sClient(), namespace, name, podExecl.Command, podExecl.ContainerName)
+
 }

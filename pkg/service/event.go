@@ -25,7 +25,7 @@ func EventList(c *gin.Context) {
 	option := metav1.ListOptions{
 		FieldSelector: listSelector.String(),
 	}
-	eventList, err := config.GetK8sConfig().CoreV1().Events(namespace).List(option)
+	eventList, err := config.GetK8sClient().CoreV1().Events(namespace).List(option)
 	if err != nil {
 		zap.L().Sugar().Errorf("查询event失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, eventList, err.Error()))

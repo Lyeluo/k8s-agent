@@ -8,10 +8,14 @@ import (
 func init() {
 
 	server := config.GetWebServer()
-	deployment := server.Group("/api/v1/pod/namespace/:namespace/")
+	pod := server.Group("/api/v1/pod/namespace/:namespace/")
 	{
-		deployment.GET("/deployment/:deployment/list", service.PodListByDeployment)
+		pod.GET("/deployment/:deployment/list", service.PodListByDeployment)
 
-		deployment.PATCH("/:name", service.PodPatch)
+		pod.PATCH("/:name", service.PodPatch)
+
+		pod.POST("/:name/logs", service.PodLogs)
+
+		pod.POST("/:name/exec", service.PodExec)
 	}
 }

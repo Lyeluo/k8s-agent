@@ -14,7 +14,7 @@ import (
 // 查询namespace列表
 func NamespaceList(c *gin.Context) {
 
-	ns, err := config.GetK8sConfig().CoreV1().Namespaces().List(metav1.ListOptions{})
+	ns, err := config.GetK8sClient().CoreV1().Namespaces().List(metav1.ListOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("查询namespace失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, ns, err.Error()))
@@ -26,7 +26,7 @@ func NamespaceList(c *gin.Context) {
 // 根据名称查询namespace
 func NamespaceGet(c *gin.Context) {
 	name := c.Param("name")
-	ns, err := config.GetK8sConfig().CoreV1().Namespaces().Get(name, metav1.GetOptions{})
+	ns, err := config.GetK8sClient().CoreV1().Namespaces().Get(name, metav1.GetOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("查询namespace失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
@@ -46,7 +46,7 @@ func NamespaceCreate(c *gin.Context) {
 		return
 	}
 
-	ns, err := config.GetK8sConfig().CoreV1().Namespaces().Create(&namespace)
+	ns, err := config.GetK8sClient().CoreV1().Namespaces().Create(&namespace)
 	if err != nil {
 		zap.L().Sugar().Errorf("创建namespace失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
@@ -58,7 +58,7 @@ func NamespaceCreate(c *gin.Context) {
 // 删除命名空间
 func NamespaceDelete(c *gin.Context) {
 	name := c.Param("name")
-	err := config.GetK8sConfig().CoreV1().Namespaces().Delete(name, &metav1.DeleteOptions{})
+	err := config.GetK8sClient().CoreV1().Namespaces().Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("删除namespace失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))

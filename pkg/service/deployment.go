@@ -17,7 +17,7 @@ import (
 func DeploymentList(c *gin.Context) {
 	namespace := c.Param("namespace")
 
-	deploymentList, err := config.GetK8sConfig().AppsV1().Deployments(namespace).List(metav1.ListOptions{})
+	deploymentList, err := config.GetK8sClient().AppsV1().Deployments(namespace).List(metav1.ListOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("查询namespace失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, deploymentList, err.Error()))
@@ -32,7 +32,7 @@ func DeploymentDelete(c *gin.Context) {
 	namespace := c.Param("namespace")
 	deploymentName := c.Param("name")
 
-	err := config.GetK8sConfig().AppsV1().Deployments(namespace).Delete(deploymentName, &metav1.DeleteOptions{})
+	err := config.GetK8sClient().AppsV1().Deployments(namespace).Delete(deploymentName, &metav1.DeleteOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("删除deployment失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
@@ -52,7 +52,7 @@ func DeploymentCreate(c *gin.Context) {
 		return
 	}
 
-	deploymentResult, err := config.GetK8sConfig().AppsV1().Deployments(deployment.Namespace).Create(&deployment)
+	deploymentResult, err := config.GetK8sClient().AppsV1().Deployments(deployment.Namespace).Create(&deployment)
 	if err != nil {
 		zap.L().Sugar().Errorf("创建deployment失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
@@ -72,7 +72,7 @@ func DeploymentUpdate(c *gin.Context) {
 		return
 	}
 
-	deploymentResult, err := config.GetK8sConfig().AppsV1().Deployments(deployment.Namespace).Update(&deployment)
+	deploymentResult, err := config.GetK8sClient().AppsV1().Deployments(deployment.Namespace).Update(&deployment)
 	if err != nil {
 		zap.L().Sugar().Errorf("更新deployment失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
@@ -96,7 +96,7 @@ func DeploymentPatch(c *gin.Context) {
 
 	playLoadBytes, _ := json.Marshal(data)
 
-	deploymentResult, err := config.GetK8sConfig().AppsV1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, playLoadBytes)
+	deploymentResult, err := config.GetK8sClient().AppsV1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, playLoadBytes)
 	if err != nil {
 		zap.L().Sugar().Errorf("更新deployment失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))

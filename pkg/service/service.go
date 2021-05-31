@@ -17,7 +17,7 @@ import (
 func ServiceList(c *gin.Context) {
 	namespace := c.Param("namespace")
 
-	serviceList, err := config.GetK8sConfig().CoreV1().Services(namespace).List(metav1.ListOptions{})
+	serviceList, err := config.GetK8sClient().CoreV1().Services(namespace).List(metav1.ListOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("查询service失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, serviceList, err.Error()))
@@ -38,7 +38,7 @@ func ServiceCreate(c *gin.Context) {
 		return
 	}
 
-	serviceResult, err := config.GetK8sConfig().CoreV1().Services(service.Namespace).Create(&service)
+	serviceResult, err := config.GetK8sClient().CoreV1().Services(service.Namespace).Create(&service)
 	if err != nil {
 		zap.L().Sugar().Errorf("创建service失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
@@ -52,7 +52,7 @@ func ServiceDelete(c *gin.Context) {
 	namespace := c.Param("namespace")
 	serviceName := c.Param("name")
 
-	err := config.GetK8sConfig().CoreV1().Services(namespace).Delete(serviceName, &metav1.DeleteOptions{})
+	err := config.GetK8sClient().CoreV1().Services(namespace).Delete(serviceName, &metav1.DeleteOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("删除service失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
@@ -75,7 +75,7 @@ func ServicePatch(c *gin.Context) {
 	}
 	playLoadBytes, _ := json.Marshal(data)
 
-	deploymentResult, err := config.GetK8sConfig().CoreV1().Services(namespace).Patch(name, types.JSONPatchType, playLoadBytes)
+	deploymentResult, err := config.GetK8sClient().CoreV1().Services(namespace).Patch(name, types.JSONPatchType, playLoadBytes)
 	if err != nil {
 		zap.L().Sugar().Errorf("更新service失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
@@ -96,7 +96,7 @@ func ServiceUpdate(c *gin.Context) {
 		return
 	}
 
-	serviceResult, err := config.GetK8sConfig().CoreV1().Services(service.Namespace).Update(&service)
+	serviceResult, err := config.GetK8sClient().CoreV1().Services(service.Namespace).Update(&service)
 	if err != nil {
 		zap.L().Sugar().Errorf("更新service失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))

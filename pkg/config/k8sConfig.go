@@ -7,18 +7,22 @@ import (
 
 	_ "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 var k8sOnce sync.Once
 var clientset *kubernetes.Clientset
 
+var k8sOnceConfig sync.Once
+var k8sConfig *rest.Config
+
 // 初始化k8s的配置
 func init() {
-	_ = GetK8sConfig()
+	_ = GetK8sClient()
 }
 
-func GetK8sConfig() *kubernetes.Clientset {
+func GetK8sClient() *kubernetes.Clientset {
 	k8sOnce.Do(func() {
 		if instance == nil {
 			clientset = getK8sClient()
@@ -30,16 +34,29 @@ func GetK8sConfig() *kubernetes.Clientset {
 	return clientset
 }
 
+func GetK8sConfig() *rest.Config {
+	k8sOnceConfig.Do(func() {
+		if instance == nil {
+			var err error
+			k8sConfig, err = clientcmd.BuildConfigFromFlags("", filepath.Join(homeDir(), ".kube", "config"))
+			if err != nil {
+				panic(err.Error())
+			}
+
+		} else {
+			k8sConfig = &rest.Config{}
+		}
+
+	})
+	return k8sConfig
+}
+
 /*
  * 获取k8s的client对象
  */
 func getK8sClient() (clientset *kubernetes.Clientset) {
 
 	//在 kubeconfig 中使用当前上下文环境，config 获取支持 url 和 path 方式
-	config, err := clientcmd.BuildConfigFromFlags("", filepath.Join(homeDir(), ".kube", "config"))
-	if err != nil {
-		panic(err.Error())
-	}
 
 	// config, err := rest.InClusterConfig()
 	// if err != nil {
@@ -47,7 +64,8 @@ func getK8sClient() (clientset *kubernetes.Clientset) {
 	// }
 
 	// 根据指定的 config 创建一个新的 clientset
-	clientset, err = kubernetes.NewForConfig(config)
+	var err error
+	clientset, err = kubernetes.NewForConfig(GetK8sConfig())
 	if err != nil {
 		panic(err.Error())
 	}
