@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/pflag"
@@ -9,7 +10,12 @@ import (
 )
 
 type Server struct {
-	Port int `JSON:"port"`
+	Port         int    `JSON:"port"`
+	SecretToken  string `JSON:"secretToken"`
+	AgentAddress string `JSON:"address"`
+	RegistryCron string `JSON:"registryCron"`
+	AutoRegistry bool   `JSON:"autoRegistry"`
+	AdminAddress string `JSON:"adminAddress"`
 }
 
 type Config struct {
@@ -23,11 +29,11 @@ type Auth struct {
 }
 
 type LogConfig struct {
-	Level      string `json:"level"`
-	Filename   string `json:"filename"`
-	MaxSize    int    `json:"maxsize"`
-	MaxAge     int    `json:"max_age"`
-	MaxBackups int    `json:"max_backups"`
+	Level      string `JSON:"level"`
+	Filename   string `JSON:"filename"`
+	MaxSize    int    `JSON:"maxsize"`
+	MaxAge     int    `JSON:"max_age"`
+	MaxBackups int    `JSON:"max_backups"`
 }
 
 // 加载配置文件
@@ -67,8 +73,37 @@ func init() {
 
 // 定义命令行传参数
 func flagInit() {
+	// 服务端口
 	pflag.Int("server.port", 8080, "server port set ")
+	addrs, err := getClientIp()
+	if err != nil {
+		panic(err)
+	}
+	// 服务代理端地址
+	pflag.String("server.address", addrs, "server address set ")
+	// 与服务器通信的秘钥
+	pflag.String("server.secretToken", "", "server secretToken set ")
+	// server的服务端地址
+	pflag.String("server.adminAddress", "", "admin address set ")
 	pflag.Parse()
 
 	viper.BindPFlags(pflag.CommandLine)
+}
+
+func getClientIp() (string, error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String(), nil
+			}
+		}
+	}
+	return "", nil
 }

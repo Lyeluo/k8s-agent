@@ -1,5 +1,9 @@
 [server]
     port = 19000
+    secretToken = ""
+    registryCron = "*/10 * * * * ?"
+    autoRegistry = true
+    adminAddress = "http://127.0.0.1:8088/ecs-container"
 [logConfig]
 	level      = ""
     # 日志文件的位置
