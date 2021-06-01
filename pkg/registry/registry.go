@@ -78,8 +78,9 @@ func registryJob() {
 }
 
 type RegistryVo struct {
-	Port    int    `JSON:"port"`
-	Address string `JSON:"address"`
+	Port     int    `JSON:"port"`
+	Address  string `JSON:"address"`
+	ObjectId string `JSON:"objectId"`
 }
 
 type RegistryClient struct {
@@ -90,7 +91,7 @@ type RegistryClient struct {
 var once sync.Once
 var instance *RegistryClient
 
-func GetWebServer() *RegistryClient {
+func GetRegistryClient() *RegistryClient {
 	once.Do(func() {
 		if instance == nil {
 			// 初始化web对象，此处可以设置全局配置
@@ -109,8 +110,9 @@ func getRegistryClient() (registryClient *RegistryClient) {
 
 	registryURL := strings.Join([]string{adminAddress, "/registry/up"}, "")
 	registryVo := &RegistryVo{
-		Port:    viper.GetInt("server.port"),
-		Address: viper.GetString("server.address"),
+		Port:     viper.GetInt("server.port"),
+		Address:  viper.GetString("server.address"),
+		ObjectId: viper.GetString("server.objectId"),
 	}
 
 	body, err := json.Marshal(registryVo)

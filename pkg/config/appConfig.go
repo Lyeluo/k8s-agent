@@ -16,6 +16,7 @@ type Server struct {
 	RegistryCron string `JSON:"registryCron"`
 	AutoRegistry bool   `JSON:"autoRegistry"`
 	AdminAddress string `JSON:"adminAddress"`
+	ObjectId     string `JSON:"objectId"`
 }
 
 type Config struct {
@@ -25,7 +26,8 @@ type Config struct {
 }
 
 type Auth struct {
-	isOpen bool `JSON:"open"`
+	IsOpen      bool   `JSON:"open"`
+	SecretToken string `JSON:"secretToken"`
 }
 
 type LogConfig struct {
@@ -36,12 +38,15 @@ type LogConfig struct {
 	MaxBackups int    `JSON:"max_backups"`
 }
 
+var config *Config
+
 // 加载配置文件
 func init() {
-	var config Config
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
 	viper.AddConfigPath(".")
+
+	fmt.Println("开始读取配置文件。。。")
 
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("read conf failed, err:%s \n", err))
@@ -85,6 +90,10 @@ func flagInit() {
 	pflag.String("server.secretToken", "", "server secretToken set ")
 	// server的服务端地址
 	pflag.String("server.adminAddress", "", "admin address set ")
+	// objectId
+	pflag.String("server.objectId", "", "agent objectId set ")
+	// 允许agent调用的secretToken
+	pflag.String("auth.secretToken", "", "agent secretToken set ")
 	pflag.Parse()
 
 	viper.BindPFlags(pflag.CommandLine)
