@@ -10,7 +10,7 @@ func init() {
 	server := config.GetWebServer()
 	deployment := server.Group("/api/v1/service/namespace/:namespace/")
 	{
-		deployment.GET("/list", service.ServiceList)
+		deployment.POST("/list", service.ServiceList)
 
 		deployment.POST("/create", service.ServiceCreate)
 

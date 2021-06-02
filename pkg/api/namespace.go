@@ -10,7 +10,7 @@ func init() {
 	server := config.GetWebServer()
 	namespace := server.Group("/api/v1/namespace")
 	{
-		namespace.GET("/list", service.NamespaceList)
+		namespace.POST("/list", service.NamespaceList)
 
 		namespace.GET("/:name/get", service.NamespaceGet)
 

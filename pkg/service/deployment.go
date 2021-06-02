@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 	"k8s.agent/pkg/config"
 	"k8s.agent/pkg/model"
+	myutil "k8s.agent/pkg/util"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -17,7 +18,14 @@ import (
 func DeploymentList(c *gin.Context) {
 	namespace := c.Param("namespace")
 
-	deploymentList, err := config.GetK8sClient().AppsV1().Deployments(namespace).List(metav1.ListOptions{})
+	listOptions, err := myutil.GetListOptions(c)
+	if err != nil {
+		zap.L().Sugar().Errorf("更新deployment失败，原因: %s", err.Error())
+		c.JSON(http.StatusBadRequest, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+
+	deploymentList, err := config.GetK8sClient().AppsV1().Deployments(namespace).List(listOptions)
 	if err != nil {
 		zap.L().Sugar().Errorf("查询namespace失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, deploymentList, err.Error()))

@@ -16,5 +16,5 @@
      # 保留旧文件的最大个数
 	maxBackups = 3  
 [auth]
-    open = true
+    open = false
     secretToken = "0f07f90d1d1840e5a5cbad395c8427aa"    

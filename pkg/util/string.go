@@ -24,6 +24,21 @@ func ParseInt(b string, defInt int) int {
 }
 
 /**
+ * string转换int64
+ * @method parseInt
+ * @param  {[type]} b string        [description]
+ * @return {[type]}   [description]
+ */
+func ParseInt64(b string, defInt int64) int64 {
+	id, err := strconv.ParseInt(b, 10, 64)
+	if err != nil {
+		return defInt
+	} else {
+		return id
+	}
+}
+
+/**
  * int转换string
  * @method parseInt
  * @param  {[type]} b string        [description]
