@@ -128,3 +128,19 @@ type PodLogOptions struct {
 	InsecureSkipTLSVerifyBackend bool `json:"insecureSkipTLSVerifyBackend,omitempty" protobuf:"varint,9,opt,name=insecureSkipTLSVerifyBackend"`
 }
 ```
+## node
+```go
+// NodeInterface has methods to work with Node resources.
+type NodeInterface interface {
+	Create(*v1.Node) (*v1.Node, error)
+	Update(*v1.Node) (*v1.Node, error)
+	UpdateStatus(*v1.Node) (*v1.Node, error)
+	Delete(name string, options *metav1.DeleteOptions) error
+	DeleteCollection(options *metav1.DeleteOptions, listOptions metav1.ListOptions) error
+	Get(name string, options metav1.GetOptions) (*v1.Node, error)
+	List(opts metav1.ListOptions) (*v1.NodeList, error)
+	Watch(opts metav1.ListOptions) (watch.Interface, error)
+	Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1.Node, err error)
+	NodeExpansion
+}
+```

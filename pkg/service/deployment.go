@@ -20,14 +20,14 @@ func DeploymentList(c *gin.Context) {
 
 	listOptions, err := myutil.GetListOptions(c)
 	if err != nil {
-		zap.L().Sugar().Errorf("更新deployment失败，原因: %s", err.Error())
+		zap.L().Sugar().Errorf("查询deployment失败，原因: %s", err.Error())
 		c.JSON(http.StatusBadRequest, model.NewResponse(false, nil, err.Error()))
 		return
 	}
 
 	deploymentList, err := config.GetK8sClient().AppsV1().Deployments(namespace).List(listOptions)
 	if err != nil {
-		zap.L().Sugar().Errorf("查询namespace失败，原因: %s", err.Error())
+		zap.L().Sugar().Errorf("查询deployment失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, deploymentList, err.Error()))
 		return
 	}
