@@ -62,6 +62,26 @@ func NamespaceCreate(c *gin.Context) {
 	c.JSON(http.StatusOK, model.NewResponse(true, ns, model.NoErr.Msg))
 }
 
+// 修改namespace
+func NamespaceUpdate(c *gin.Context) {
+	namespace := v1.Namespace{}
+
+	err := c.BindJSON(&namespace)
+	if err != nil {
+		zap.L().Sugar().Errorf("修改namespace失败，原因: %s", err.Error())
+		c.JSON(http.StatusBadRequest, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	ns, err := config.GetK8sClient().CoreV1().Namespaces().Update(&namespace)
+	if err != nil {
+		zap.L().Sugar().Errorf("修改namespace失败，原因: %s", err.Error())
+		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, model.NewResponse(true, ns, model.NoErr.Msg))
+
+}
+
 // 删除命名空间
 func NamespaceDelete(c *gin.Context) {
 	name := c.Param("name")

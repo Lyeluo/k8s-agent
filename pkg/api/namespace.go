@@ -16,6 +16,8 @@ func init() {
 
 		namespace.POST("/create", service.NamespaceCreate)
 
+		namespace.POST("/update", service.NamespaceUpdate)
+
 		namespace.DELETE("/:name", service.NamespaceDelete)
 	}
 }

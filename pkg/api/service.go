@@ -8,16 +8,16 @@ import (
 func init() {
 
 	server := config.GetWebServer()
-	deployment := server.Group("/api/v1/service/namespace/:namespace/")
+	v1Service := server.Group("/api/v1/service/namespace/:namespace/")
 	{
-		deployment.POST("/list", service.ServiceList)
+		v1Service.POST("/list", service.ServiceList)
 
-		deployment.POST("/create", service.ServiceCreate)
+		v1Service.POST("/create", service.ServiceCreate)
 
-		deployment.DELETE("/:name", service.ServiceDelete)
+		v1Service.DELETE("/:name", service.ServiceDelete)
 
-		deployment.PATCH("/:name", service.ServicePatch)
+		v1Service.PATCH("/:name", service.ServicePatch)
 
-		deployment.POST("/:name/update", service.ServiceUpdate)
+		v1Service.POST("/:name/update", service.ServiceUpdate)
 	}
 }

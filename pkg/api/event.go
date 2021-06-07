@@ -8,9 +8,9 @@ import (
 func init() {
 
 	server := config.GetWebServer()
-	deployment := server.Group("/api/v1/event/namespace/:namespace/")
+	event := server.Group("/api/v1/event/namespace/:namespace/")
 	{
-		deployment.POST("/list", service.EventList)
+		event.POST("/list", service.EventList)
 
 	}
 }
