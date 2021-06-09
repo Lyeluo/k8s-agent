@@ -16,6 +16,8 @@ func init() {
 
 		statefulset.DELETE("/:name", service.StatefulsetDelete)
 
+		statefulset.GET("/:name/get", service.StatefulsetGet)
+
 		statefulset.POST("/:name/update", service.StatefulsetUpdate)
 	}
 }

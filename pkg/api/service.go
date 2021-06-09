@@ -16,6 +16,8 @@ func init() {
 
 		v1Service.DELETE("/:name", service.ServiceDelete)
 
+		v1Service.GET("/:name/get", service.ServiceGet)
+
 		v1Service.PATCH("/:name", service.ServicePatch)
 
 		v1Service.POST("/:name/update", service.ServiceUpdate)

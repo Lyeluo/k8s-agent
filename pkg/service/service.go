@@ -70,6 +70,20 @@ func ServiceDelete(c *gin.Context) {
 
 }
 
+// 根据名称查询
+func ServiceGet(c *gin.Context) {
+	namespace := c.Param("namespace")
+	serviceName := c.Param("name")
+
+	serviceResult, err := config.GetK8sClient().CoreV1().Services(namespace).Get(serviceName, metav1.GetOptions{})
+	if err != nil {
+		zap.L().Sugar().Errorf("删除service失败，原因: %s", err.Error())
+		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, model.NewResponse(true, serviceResult, model.NoErr.Msg))
+}
+
 // 更新service
 func ServicePatch(c *gin.Context) {
 	name := c.Param("name")

@@ -16,6 +16,8 @@ func init() {
 
 		configmap.DELETE("/:name", service.ConfigMapDelete)
 
+		configmap.GET("/:name/get", service.ConfigMapGet)
+
 		configmap.PATCH("/:name", service.ConfigMapPatch)
 
 		// configmap.POST("/:name/update", service.ConfigMapUpdate)

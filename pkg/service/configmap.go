@@ -71,6 +71,21 @@ func ConfigMapDelete(c *gin.Context) {
 
 }
 
+// 根据名称查询
+func ConfigMapGet(c *gin.Context) {
+	namespace := c.Param("namespace")
+	configMapName := c.Param("name")
+
+	configmapResult, err := config.GetK8sClient().CoreV1().ConfigMaps(namespace).Get(configMapName, v1.GetOptions{})
+	if err != nil {
+		zap.L().Sugar().Errorf("查询configmap失败，原因: %s", err.Error())
+		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, model.NewResponse(true, configmapResult, model.NoErr.Msg))
+
+}
+
 // 修改
 func ConfigMapPatch(c *gin.Context) {
 	name := c.Param("name")
@@ -90,5 +105,4 @@ func ConfigMapPatch(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, model.NewResponse(true, configmapResult, model.NoErr.Msg))
-
 }

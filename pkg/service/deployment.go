@@ -39,7 +39,6 @@ func DeploymentList(c *gin.Context) {
 func DeploymentDelete(c *gin.Context) {
 	namespace := c.Param("namespace")
 	deploymentName := c.Param("name")
-
 	err := config.GetK8sClient().AppsV1().Deployments(namespace).Delete(deploymentName, &metav1.DeleteOptions{})
 	if err != nil {
 		zap.L().Sugar().Errorf("删除deployment失败，原因: %s", err.Error())
@@ -47,6 +46,20 @@ func DeploymentDelete(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, model.NewResponse(true, nil, model.NoErr.Msg))
+}
+
+// 根据名称查询
+func DeploymentGet(c *gin.Context) {
+	namespace := c.Param("namespace")
+	deploymentName := c.Param("name")
+
+	deployment, err := config.GetK8sClient().AppsV1().Deployments(namespace).Get(deploymentName, metav1.GetOptions{})
+	if err != nil {
+		zap.L().Sugar().Errorf("查询deployment失败，原因: %s", err.Error())
+		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, model.NewResponse(true, deployment, model.NoErr.Msg))
 }
 
 // 创建deployment

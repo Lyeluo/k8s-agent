@@ -14,6 +14,8 @@ func init() {
 
 		deployment.POST("/create", service.DeploymentCreate)
 
+		deployment.GET("/:name/get", service.DeploymentGet)
+
 		deployment.DELETE("/:name", service.DeploymentDelete)
 
 		deployment.PATCH("/:name", service.DeploymentPatch)

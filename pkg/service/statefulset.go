@@ -47,6 +47,20 @@ func StatefulsetDelete(c *gin.Context) {
 	c.JSON(http.StatusOK, model.NewResponse(true, nil, model.NoErr.Msg))
 }
 
+// 根据名称查询
+func StatefulsetGet(c *gin.Context) {
+	namespace := c.Param("namespace")
+	statefulsetName := c.Param("name")
+
+	statefulsetResult, err := config.GetK8sClient().AppsV1().StatefulSets(namespace).Get(statefulsetName, metav1.GetOptions{})
+	if err != nil {
+		zap.L().Sugar().Errorf("删除Statefulset失败，原因: %s", err.Error())
+		c.JSON(http.StatusOK, model.NewResponse(false, nil, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, model.NewResponse(true, statefulsetResult, model.NoErr.Msg))
+}
+
 // 创建StatefulSets
 func StatefulsetCreate(c *gin.Context) {
 	statefulset := appsv1.StatefulSet{}

@@ -1,10 +1,10 @@
 [server]
     port = 19000
     secretToken = ""
-    registryCron = "*/10 * * * * ?"
-    autoRegistry = false
+    registryCron = "0 0/1 * * * ?"
+    autoRegistry = true
     adminAddress = "http://127.0.0.1:8088/ecs-container"
-    objectId = "1234"
+    objectId = "11ebc8256d5a46c882573149680305db"
 [logConfig]
 	level      = ""
     # 日志文件的位置
@@ -16,5 +16,5 @@
      # 保留旧文件的最大个数
 	maxBackups = 3  
 [auth]
-    open = false
-    secretToken = "0f07f90d1d1840e5a5cbad395c8427aa"    
+    open = true
+    secretToken = "11ebc8256d5a46c882573149680305db"    

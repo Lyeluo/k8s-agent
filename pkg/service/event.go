@@ -16,13 +16,13 @@ func EventList(c *gin.Context) {
 
 	listOptions, err := myutil.GetListOptions(c)
 	if err != nil {
-		zap.L().Sugar().Errorf("更新deployment失败，原因: %s", err.Error())
+		zap.L().Sugar().Errorf("查询事件失败，原因: %s", err.Error())
 		c.JSON(http.StatusBadRequest, model.NewResponse(false, nil, err.Error()))
 		return
 	}
 	eventList, err := config.GetK8sClient().CoreV1().Events(namespace).List(listOptions)
 	if err != nil {
-		zap.L().Sugar().Errorf("查询event失败，原因: %s", err.Error())
+		zap.L().Sugar().Errorf("查询事件失败，原因: %s", err.Error())
 		c.JSON(http.StatusOK, model.NewResponse(false, eventList, err.Error()))
 		return
 	}

@@ -128,7 +128,8 @@ func getRegistryClient() (registryClient *RegistryClient) {
 	registryReq.Header.Set("secretToken", viper.GetString("server.secretToken"))
 
 	// 注销的httpclient
-	deRegistryURL := strings.Join([]string{adminAddress, "/registry/down"}, "")
+	objectId := viper.GetString("auth.secretToken")
+	deRegistryURL := strings.Join([]string{adminAddress, "/registry/down", "/", objectId}, "")
 	deRegistryReq, err := http.NewRequest("GET", deRegistryURL, nil)
 	if err != nil {
 		zap.L().Sugar().Errorf("注册地址到中心失败，原因：%s", err)
