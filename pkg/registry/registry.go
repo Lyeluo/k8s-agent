@@ -78,9 +78,9 @@ func registryJob() {
 }
 
 type RegistryVo struct {
-	Port     int    `JSON:"port"`
-	Address  string `JSON:"address"`
-	ObjectId string `JSON:"objectId"`
+	Port     int    `json:"port"`
+	Address  string `json:"address"`
+	ObjectId string `json:"objectId"`
 }
 
 type RegistryClient struct {
@@ -109,13 +109,13 @@ func getRegistryClient() (registryClient *RegistryClient) {
 	adminAddress := viper.GetString("server.adminAddress")
 
 	registryURL := strings.Join([]string{adminAddress, "/registry/up"}, "")
-	registryVo := &RegistryVo{
+	registryVo := RegistryVo{
 		Port:     viper.GetInt("server.port"),
 		Address:  viper.GetString("server.address"),
 		ObjectId: viper.GetString("server.objectId"),
 	}
 
-	body, err := json.Marshal(registryVo)
+	body, err := json.Marshal(&registryVo)
 	if err != nil {
 		zap.L().Sugar().Errorf("注册地址到中心失败，原因：%s", err)
 		return

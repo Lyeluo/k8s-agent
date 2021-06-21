@@ -94,7 +94,7 @@ func PodLogs(c *gin.Context) {
 	}
 	str := buf.String()
 	fmt.Printf("查询到日志：%s \n", str)
-	c.JSON(http.StatusOK, model.NewResponse(false, str, model.NoErr.Msg))
+	c.JSON(http.StatusOK, model.NewResponse(true, str, model.NoErr.Msg))
 }
 
 func PodExec(c *gin.Context) {
@@ -107,7 +107,6 @@ func PodExec(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, model.NewResponse(false, nil, err.Error()))
 		return
 	}
-
 	ExecInPod(config.GetK8sClient(), namespace, name, podExecl.Command, podExecl.ContainerName)
 
 }

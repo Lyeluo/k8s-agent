@@ -13,7 +13,9 @@ func GetListOptions(c *gin.Context) (metav1.ListOptions, error) {
 	// 获取查询参数
 	conditionSelector := model.ConditionSelector{}
 	var listOptions metav1.ListOptions
-	if err := c.BindJSON(&conditionSelector); err != nil {
+	// c.BindJSON post参数必须有
+	// c.ShouldBind post参数可以没有
+	if err := c.ShouldBind(&conditionSelector); err != nil {
 
 		return listOptions, err
 	}

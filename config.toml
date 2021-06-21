@@ -5,6 +5,7 @@
     autoRegistry = true
     adminAddress = "http://127.0.0.1:8088/ecs-container"
     objectId = "11ebc8256d5a46c882573149680305db"
+    address = "127.0.0.1"
 [logConfig]
 	level      = ""
     # 日志文件的位置

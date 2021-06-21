@@ -8,14 +8,17 @@ import (
 func init() {
 
 	server := config.GetWebServer()
-	namespace := server.Group("/api/v1/limitRange")
+	namespace := server.Group("/api/v1/limitRange/:namespace")
 	{
-		namespace.GET("/:namespace/get", service.NamespaceGet)
 
-		namespace.POST("/create", service.NamespaceCreate)
+		namespace.GET("/list", service.LimitRangeList)
 
-		namespace.POST("/update", service.NamespaceUpdate)
+		namespace.GET("/:name", service.LimitRangeGet)
 
-		namespace.DELETE("/:name", service.NamespaceDelete)
+		namespace.POST("/create", service.LimitRangeCreate)
+
+		namespace.POST("/update", service.LimitRangeUpdate)
+
+		namespace.DELETE("/:name", service.LimitRangeDelete)
 	}
 }
